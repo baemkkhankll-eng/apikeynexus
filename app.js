@@ -19,35 +19,43 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Passport Discord Strategy
-passport.use(new DiscordStrategy({
-  clientID: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: process.env.DISCORD_CALLBACK_URL,
-  scope: ['identify', 'email']
-},
-(accessToken, refreshToken, profile, done) => {
-  // Find or create user
-  let user = users.find(u => u.discordId === profile.id);
-  if (!user) {
-    user = {
-      id: Date.now().toString(),
-      discordId: profile.id,
-      username: profile.username,
-      email: profile.email,
-      developerId: generateDeveloperId(),
-      createdAt: new Date().toISOString()
-    };
-    users.push(user);
-  }
-  return done(null, user);
-}));
+if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET && process.env.DISCORD_CALLBACK_URL) {
+  passport.use(new DiscordStrategy({
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    callbackURL: process.env.DISCORD_CALLBACK_URL,
+    scope: ['identify', 'email']
+  },
+  (accessToken, refreshToken, profile, done) => {
+    // Find or create user
+    let user = users.find(u => u.discordId === profile.id);
+    if (!user) {
+      user = {
+        id: Date.now().toString(),
+        discordId: profile.id,
+        username: profile.username,
+        email: profile.email,
+        developerId: generateDeveloperId(),
+        createdAt: new Date().toISOString()
+      };
+      users.push(user);
+    }
+    return done(null, user);
+  }));
+} else {
+  console.warn('Discord OAuth credentials not configured. Discord login will not work.');
+}
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
@@ -241,5 +249,10 @@ app.get('/auth/logout', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Health check endpoint for render and other platforms
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
