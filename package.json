@@ -1,0 +1,21 @@
+{
+  "name": "hwid-key-auth-service",
+  "version": "1.0.0",
+  "description": "HWID Key Authentication Service with Admin Control Panel",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "passport": "^0.6.0",
+    "passport-discord": "^0.1.4",
+    "express-session": "^1.17.3",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": ["hwid", "authentication", "key-management"],
+  "author": "",
+  "license": "ISC"
+}
