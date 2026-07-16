@@ -1,386 +1,423 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>เอกสาร API - HWID Key Authentication</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Noto Sans Thai', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          animation: {
+            'glow': 'glow 10s ease-in-out infinite alternate',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            glow: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '50%': { transform: 'translate(40px, -60px) scale(1.2)' },
+              '100%': { transform: 'translate(-30px, 30px) scale(0.8)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    code, pre { font-family: 'JetBrains Mono', monospace; }
+    body {
+      background-color: #080c14;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b132b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+    /* คัสตอมสไตล์สำหรับ Codeblock */
+    pre code {
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+    .keyword { color: #f43f5e; }
+    .string { color: #10b981; }
+    .function { color: #3b82f6; }
+    .comment { color: #64748b; }
+    .number { color: #f59e0b; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 shadow-sm">
-    <div class="max-w-7xl mx-auto px-6 py-4">
+<body 
+  x-data="{ copiedText: null, currentTab: 'python' }" 
+  class="text-slate-200 min-h-screen relative antialiased select-none font-sans"
+>
+
+  <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+    <div class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[130px] animate-glow"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[700px] h-[700px] rounded-full bg-indigo-600/10 blur-[150px] animate-glow" style="animation-delay: -5s;"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+  </div>
+
+  <header class="backdrop-blur-md bg-slate-900/40 border-b border-slate-800/60 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg border border-blue-400/10 animate-float">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
             </svg>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-slate-900">เอกสาร API</h1>
-            <p class="text-sm text-slate-500">บริการตรวจสอบ HWID Key Authentication</p>
+            <h1 class="text-lg font-bold text-white tracking-wide">เอกสาร API Reference</h1>
+            <p class="text-xs text-slate-400 font-medium">ระบบตรวจสอบสิทธิ์คีย์ตรวจสอบฮาร์ดแวร์ไอดี (HWID)</p>
           </div>
         </div>
-        <a href="/" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
+        <a href="/" class="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 rounded-xl font-medium text-sm transition-all duration-200 active:scale-95">
           กลับไปแดชบอร์ด
         </a>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 py-8">
-    <!-- Overview -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">ภาพรวม</h2>
-      <p class="text-slate-600 mb-4">
-        API นี้ช่วยให้คุณสามารถตรวจสอบคีย์ลิขสิทธิ์ที่ล็อกด้วย HWID ในแอปพลิเคชันของคุณ
-        แต่ละคีย์จะเชื่อมโยงกับ Developer ID เฉพาะและสามารถใช้ได้บนเครื่องเดียวเท่านั้น (HWID)
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full relative z-10 space-y-8">
+    
+    <div class="backdrop-blur-md bg-slate-900/50 rounded-3xl border border-slate-800/80 p-6 sm:p-8 shadow-xl relative overflow-hidden group">
+      <h2 class="text-lg font-bold text-white mb-4 tracking-wide flex items-center gap-2">
+        <span class="w-1.5 h-5 bg-blue-500 rounded-full"></span> ภาพรวมระบบ (Overview)
+      </h2>
+      <p class="text-slate-400 text-sm leading-relaxed max-w-4xl mb-6">
+        API ของเราถูกออกแบบมาบนสถาปัตยกรรมแบบ RESTful ที่มีน้ำหนักเบาและมีความปลอดภัยสูง เพื่อช่วยให้คุณสามารถตรวจสอบคีย์ลิขสิทธิ์ซอฟต์แวร์ที่ล็อกติดกับ 
+        Hardware ID (HWID) ประจำเครื่องของลูกค้ารองรับการทำงานบนเครื่องเดียวต่อหนึ่งคีย์อย่างแม่นยำ ป้องกันการนำคีย์ไปแชร์ใช้งานต่อได้อย่างเด็ดขาด
       </p>
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p class="text-sm text-blue-800">
-          <strong>Base URL:</strong> <code class="bg-blue-100 px-2 py-1 rounded">https://apikeynexus.onrender.com/</code>
-        </p>
+      
+      <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-sm">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-semibold border border-blue-500/20 uppercase">Base URL</span>
+          <code class="text-slate-300 truncate tracking-wide" id="base-url">https://apikeynexus.onrender.com/</code>
+        </div>
+        <button 
+          @click="navigator.clipboard.writeText('https://apikeynexus.onrender.com/'); copiedText = 'base'; setTimeout(() => copiedText = null, 2000)" 
+          class="shrink-0 text-slate-500 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-sans"
+        >
+          <svg x-show="copiedText !== 'base'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          <span x-show="copiedText === 'base'" class="text-emerald-400 font-medium" style="display:none;">✓ คัดลอกแล้ว!</span>
+          <span x-show="copiedText !== 'base'">คัดลอกลิ้งก์</span>
+        </button>
       </div>
     </div>
 
-    <!-- Python Section -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-        <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
-        </svg>
-        การใช้งาน Python
-      </h2>
-      
-      <div class="space-y-6">
-        <!-- Installation -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">การติดตั้ง</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto"><code>pip install requests</code></pre>
-        </div>
-
-        <!-- Get HWID -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">รับ HWID ของเครื่อง</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>import uuid
-import hashlib
-
-def get_hwid():
-    mac = uuid.getnode()
-    hwid = hashlib.sha256(str(mac).encode()).hexdigest()[:32]
-    return hwid</code></pre>
-        </div>
-
-        <!-- Validate Key -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ตรวจสอบคีย์</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>import requests
-
-API_URL = "http://localhost:3000"
-DEVELOPER_ID = "YOUR_DEVELOPER_ID"  # Get this from your dashboard
-
-def validate_key(key, hwid):
-    response = requests.post(f"{API_URL}/api/validate", json={
-        "key": key,
-        "hwid": hwid,
-        "developerId": DEVELOPER_ID
-    })
-    
-    result = response.json()
-    
-    if result["valid"]:
-        print(f"✓ {result['message']}")
-        return True
-    else:
-        print(f"✗ {result['message']}")
-        return False
-
-# Usage
-hwid = get_hwid()
-key = "KEY-XXXX-XXXX-XXXX-XXXX"  # Your license key
-validate_key(key, hwid)</code></pre>
-        </div>
-
-        <!-- Full Example -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ตัวอย่างแบบเต็ม</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>import uuid
-import hashlib
-import requests
-
-class HWIDAuth:
-    def __init__(self, api_url, developer_id):
-        self.api_url = api_url
-        self.developer_id = developer_id
-    
-    def get_hwid(self):
-        mac = uuid.getnode()
-        return hashlib.sha256(str(mac).encode()).hexdigest()[:32]
-    
-    def validate(self, key):
-        hwid = self.get_hwid()
-        response = requests.post(
-            f"{self.api_url}/api/validate",
-            json={
-                "key": key,
-                "hwid": hwid,
-                "developerId": self.developer_id
-            }
-        )
-        return response.json()
-
-# Usage
-auth = HWIDAuth("http://localhost:3000", "YOUR_DEVELOPER_ID")
-result = auth.validate("KEY-XXXX-XXXX-XXXX-XXXX")
-
-if result["valid"]:
-    print("License valid! Application starting...")
-    # Start your application
-else:
-    print(f"License invalid: {result['message']}")
-    # Exit or show error</code></pre>
-        </div>
-      </div>
+    <div class="flex border-b border-slate-800/80">
+      <button @click="currentTab = 'python'" :class="currentTab === 'python' ? 'text-blue-400 border-blue-500 border-b-2 font-bold' : 'text-slate-400 font-medium'" class="px-6 py-3 text-sm transition-all flex items-center gap-2">
+        <span>Python SDK</span>
+      </button>
+      <button @click="currentTab = 'javascript'" :class="currentTab === 'javascript' ? 'text-yellow-400 border-b-2 border-yellow-500 font-bold' : 'text-slate-400 font-medium'" class="px-6 py-3 text-sm transition-all flex items-center gap-2">
+        <span>JavaScript (Node.js)</span>
+      </button>
     </div>
 
-    <!-- JavaScript Section -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-        <svg class="w-6 h-6 text-yellow-500" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/>
-        </svg>
-        การใช้งาน JavaScript
-      </h2>
-      
-      <div class="space-y-6">
-        <!-- Installation -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">การติดตั้ง</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto"><code>npm install node-machine-id axios</code></pre>
-        </div>
+    <div x-show="currentTab === 'python'" class="space-y-6" x-transition:enter="transition ease-out duration-300">
+      <div class="backdrop-blur-md bg-slate-900/50 rounded-3xl border border-slate-800/80 p-6 sm:p-8 shadow-xl">
+        <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+          <svg class="w-6 h-6 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+          </svg>
+          การอ้างอิงและคู่มือสำหรับภาษา Python
+        </h2>
 
-        <!-- Get HWID -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">รับ HWID ของเครื่อง</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>const { machineIdSync } = require('node-machine-id');
-const crypto = require('crypto');
-
-function getHWID() {
-  const id = machineIdSync();
-  return crypto.createHash('sha256').update(id).digest('hex').substring(0, 32);
-}</code></pre>
-        </div>
-
-        <!-- Validate Key -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ตรวจสอบคีย์</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>const axios = require('axios');
-
-const API_URL = "http://localhost:3000";
-const DEVELOPER_ID = "YOUR_DEVELOPER_ID";  // Get this from your dashboard
-
-async function validateKey(key, hwid) {
-  try {
-    const response = await axios.post(`${API_URL}/api/validate`, {
-      key: key,
-      hwid: hwid,
-      developerId: DEVELOPER_ID
-    });
-    
-    const result = response.data;
-    
-    if (result.valid) {
-      console.log(`✓ ${result.message}`);
-      return true;
-    } else {
-      console.log(`✗ ${result.message}`);
-      return false;
-    }
-  } catch (error) {
-    console.error('Validation error:', error.message);
-    return false;
-  }
-}
-
-// Usage
-const hwid = getHWID();
-const key = "KEY-XXXX-XXXX-XXXX-XXXX";  // Your license key
-validateKey(key, hwid);</code></pre>
-        </div>
-
-        <!-- Full Example -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ตัวอย่างแบบเต็ม</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>const { machineIdSync } = require('node-machine-id');
-const crypto = require('crypto');
-const axios = require('axios');
-
-class HWIDAuth {
-  constructor(apiUrl, developerId) {
-    this.apiUrl = apiUrl;
-    this.developerId = developerId;
-  }
-  
-  getHWID() {
-    const id = machineIdSync();
-    return crypto.createHash('sha256').update(id).digest('hex').substring(0, 32);
-  }
-  
-  async validate(key) {
-    const hwid = this.getHWID();
-    try {
-      const response = await axios.post(`${this.apiUrl}/api/validate`, {
-        key: key,
-        hwid: hwid,
-        developerId: this.developerId
-      });
-      return response.data;
-    } catch (error) {
-      return { valid: false, message: error.message };
-    }
-  }
-}
-
-// Usage
-const auth = new HWIDAuth("http://localhost:3000", "YOUR_DEVELOPER_ID");
-
-async function startApp() {
-  const result = await auth.validate("KEY-XXXX-XXXX-XXXX-XXXX");
-  
-  if (result.valid) {
-    console.log("License valid! Application starting...");
-    // Start your application
-  } else {
-    console.log(`License invalid: ${result.message}`);
-    process.exit(1);
-  }
-}
-
-startApp();</code></pre>
-        </div>
-
-        <!-- Browser Example -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ตัวอย่าง Browser/Client-side</h3>
-          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 overflow-x-auto text-sm"><code>// For web applications (generate HWID from browser fingerprint)
-async function getBrowserHWID() {
-  const fingerprint = await generateFingerprint(); // Use fingerprinting library
-  return simpleHash(fingerprint);
-}
-
-async function validateKey(key) {
-  const hwid = await getBrowserHWID();
-  
-  const response = await fetch('http://localhost:3000/api/validate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      key: key,
-      hwid: hwid,
-      developerId: 'YOUR_DEVELOPER_ID'
-    })
-  });
-  
-  return await response.json();
-}
-
-// Usage
-validateKey('KEY-XXXX-XXXX-XXXX-XXXX').then(result => {
-  if (result.valid) {
-    console.log('License valid!');
-  } else {
-    console.log('License invalid:', result.message);
-  }
-});</code></pre>
-        </div>
-      </div>
-    </div>
-
-    <!-- API Reference -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">อ้างอิง API</h2>
-      
-      <div class="space-y-6">
-        <!-- Validate Endpoint -->
-        <div class="border border-slate-200 rounded-lg overflow-hidden">
-          <div class="bg-slate-50 px-4 py-3 border-b border-slate-200">
-            <div class="flex items-center gap-3">
-              <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">POST</span>
-              <code class="text-sm font-mono text-slate-700">/api/validate</code>
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-300 mb-2">1. ติดตั้งไลบรารีที่จำเป็น</h3>
+            <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 font-mono text-sm flex items-center justify-between">
+              <span class="text-blue-400">pip <span class="text-slate-300">install requests</span></span>
+              <button @click="navigator.clipboard.writeText('pip install requests'); copiedText = 'py_pip'; setTimeout(() => copiedText = null, 2000)" class="text-slate-500 hover:text-white transition-colors text-xs font-sans">
+                <span x-show="copiedText === 'py_pip'" class="text-emerald-400" style="display:none;">✓ คัดลอกแล้ว</span>
+                <span x-show="copiedText !== 'py_pip'">คัดลอก</span>
+              </button>
             </div>
           </div>
-          <div class="p-4">
-            <p class="text-sm text-slate-600 mb-3">ตรวจสอบคีย์ลิขสิทธิ์พร้อมการตรวจสอบ HWID</p>
-            
-            <h4 class="text-sm font-medium text-slate-800 mb-2">Request Body</h4>
-            <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs overflow-x-auto mb-3"><code>{
-  "key": "KEY-XXXX-XXXX-XXXX-XXXX",
-  "hwid": "32-character-hwid-hash",
-  "developerId": "DEV-XXXXXXXX"
-}</code></pre>
-            
-            <h4 class="text-sm font-medium text-slate-800 mb-2">Response (สำเร็จ)</h4>
-            <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs overflow-x-auto mb-3"><code>{
-  "valid": true,
-  "message": "Key valid"
-}</code></pre>
-            
-            <h4 class="text-sm font-medium text-slate-800 mb-2">Response (ข้อผิดพลาด)</h4>
-            <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs overflow-x-auto"><code>{
-  "valid": false,
-  "message": "Key is banned"
-}</code></pre>
-          </div>
-        </div>
 
-        <!-- Error Messages -->
-        <div>
-          <h3 class="text-md font-medium text-slate-800 mb-2">ข้อความข้อผิดพลาด</h3>
-          <div class="bg-slate-50 rounded-lg p-4">
-            <ul class="space-y-2 text-sm text-slate-600">
-              <li><code class="bg-slate-200 px-1 rounded">Invalid key</code> - คีย์ไม่มีอยู่จริง</li>
-              <li><code class="bg-slate-200 px-1 rounded">Key is banned</code> - คีย์ถูกระงับโดยเจ้าของ</li>
-              <li><code class="bg-slate-200 px-1 rounded">Key expired</code> - คีย์หมดอายุแล้ว</li>
-              <li><code class="bg-slate-200 px-1 rounded">HWID mismatch</code> - คีย์ถูกล็อกกับเครื่องอื่น</li>
-              <li><code class="bg-slate-200 px-1 rounded">Developer ID mismatch</code> - Developer ID ไม่ถูกต้อง</li>
-            </ul>
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-semibold text-slate-300">2. ตัวอย่างการเขียนสคริปต์ตรวจสอบแบบเต็ม (Full Implementation)</h3>
+              <button @click="navigator.clipboard.writeText(document.getElementById('py-code').innerText); copiedText = 'py_code'; setTimeout(() => copiedText = null, 2000)" class="px-3 py-1 bg-slate-800 text-slate-400 rounded-lg text-xs hover:text-white transition-all flex items-center gap-1 border border-slate-700/50">
+                <span x-show="copiedText === 'py_code'" class="text-emerald-400" style="display:none;">✓ คัดลอกสคริปต์แล้ว!</span>
+                <span x-show="copiedText !== 'py_code'">คัดลอกโค้ดทั้งหมด</span>
+              </button>
+            </div>
+            
+            <pre class="bg-slate-950/80 rounded-2xl p-5 border border-slate-800 overflow-x-auto font-mono text-xs sm:text-sm"><code id="py-code"><span class="keyword">import</span> uuid
+<span class="keyword">import</span> hashlib
+<span class="keyword">import</span> requests
+
+<span class="keyword">class</span> <span class="function">HWIDAuth</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, api_url, developer_id):
+        <span class="keyword">self</span>.api_url = api_url
+        <span class="keyword">self</span>.developer_id = developer_id
+    
+    <span class="keyword">def</span> <span class="function">get_hwid</span>(<span class="keyword">self</span>):
+        <span class="comment"># ดึงค่า MAC Address ของเครื่องมาแฮชเพื่อสร้างคีย์เฉพาะตัวของฮาร์ดแวร์</span>
+        mac = uuid.getnode()
+        <span class="keyword">return</span> hashlib.sha256(str(mac).encode()).hexdigest()[:32]
+    
+    <span class="keyword">def</span> <span class="function">validate</span>(<span class="keyword">self</span>, key):
+        hwid = <span class="keyword">self</span>.get_hwid()
+        <span class="keyword">try</span>:
+            response = requests.post(
+                f"{<span class="keyword">self</span>.api_url}/api/validate",
+                json={
+                    <span class="string">"key"</span>: key,
+                    <span class="string">"hwid"</span>: hwid,
+                    <span class="string">"developerId"</span>: <span class="keyword">self</span>.developer_id
+                },
+                timeout=10
+            )
+            <span class="keyword">return</span> response.json()
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            <span class="keyword">return</span> {<span class="string">"valid"</span>: <span class="number">False</span>, <span class="string">"message"</span>: str(e)}
+
+<span class="comment"># --- ตัวอย่างการเรียกใช้งานจริง ---</span>
+API_URL = <span class="string">"https://apikeynexus.onrender.com"</span>
+DEVELOPER_ID = <span class="string">"YOUR_DEVELOPER_ID"</span> <span class="comment"># คัดลอกค่าจากหน้าแดชบอร์ดของคุณ</span>
+LICENSE_KEY = <span class="string">"KEY-XXXX-XXXX-XXXX-XXXX"</span>
+
+auth = HWIDAuth(API_URL, DEVELOPER_ID)
+result = auth.validate(LICENSE_KEY)
+
+<span class="keyword">if</span> result[<span class="string">"valid"</span>]:
+    print(<span class="string">"✓ ลิขสิทธิ์ถูกต้อง! กำลังเปิดโปรแกรม..."</span>)
+    <span class="comment"># วางฟังก์ชันเริ่มทำงานระบบของคุณตรงนี้</span>
+<span class="keyword">else</span>:
+    print(f<span class="string">"✗ เข้าสู่ระบบล้มเหลว: {result['message']}"</span>)
+    exit(<span class="number">1</span>)</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Notes -->
-    <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
+    <div x-show="currentTab === 'javascript'" class="space-y-6" x-transition:enter="transition ease-out duration-300" style="display: none;">
+      <div class="backdrop-blur-md bg-slate-900/50 rounded-3xl border border-slate-800/80 p-6 sm:p-8 shadow-xl">
+        <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+          <svg class="w-6 h-6 text-yellow-500" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/>
+          </svg>
+          การอ้างอิงและคู่มือสำหรับภาษา Node.js / JavaScript
+        </h2>
+
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-300 mb-2">1. ติดตั้งแพ็คเกจผ่าน npm</h3>
+            <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 font-mono text-sm flex items-center justify-between">
+              <span class="text-yellow-500">npm <span class="text-slate-300">install node-machine-id axios</span></span>
+              <button @click="navigator.clipboard.writeText('npm install node-machine-id axios'); copiedText = 'js_npm'; setTimeout(() => copiedText = null, 2000)" class="text-slate-500 hover:text-white transition-colors text-xs font-sans">
+                <span x-show="copiedText === 'js_npm'" class="text-emerald-400" style="display:none;">✓ คัดลอกแล้ว</span>
+                <span x-show="copiedText !== 'js_npm'">คัดลอก</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-semibold text-slate-300">2. ตัวอย่างการเขียนสคริปต์แบบเต็มสำหรับ Backend / Desktop App</h3>
+              <button @click="navigator.clipboard.writeText(document.getElementById('js-code').innerText); copiedText = 'js_code'; setTimeout(() => copiedText = null, 2000)" class="px-3 py-1 bg-slate-800 text-slate-400 rounded-lg text-xs hover:text-white transition-all flex items-center gap-1 border border-slate-700/50">
+                <span x-show="copiedText === 'js_code'" class="text-emerald-400" style="display:none;">✓ คัดลอกสคริปต์แล้ว!</span>
+                <span x-show="copiedText !== 'js_code'">คัดลอกโค้ดทั้งหมด</span>
+              </button>
+            </div>
+            
+            <pre class="bg-slate-950/80 rounded-2xl p-5 border border-slate-800 overflow-x-auto font-mono text-xs sm:text-sm"><code id="js-code"><span class="keyword">const</span> { machineIdSync } = <span class="function">require</span>(<span class="string">'node-machine-id'</span>);
+<span class="keyword">const</span> crypto = <span class="function">require</span>(<span class="string">'crypto'</span>);
+<span class="keyword">const</span> axios = <span class="function">require</span>(<span class="string">'axios'</span>);
+
+<span class="keyword">class</span> <span class="function">HWIDAuth</span> {
+  <span class="function">constructor</span>(apiUrl, developerId) {
+    <span class="keyword">this</span>.apiUrl = apiUrl;
+    <span class="keyword">this</span>.developerId = developerId;
+  }
+  
+  <span class="function">getHWID</span>() {
+    <span class="comment">// เจนคีย์ประจำเมนบอร์ดหรือระบบปฏิบัติการแบบถาวร</span>
+    <span class="keyword">const</span> id = <span class="function">machineIdSync</span>();
+    <span class="keyword">return</span> crypto.<span class="function">createHash</span>(<span class="string">'sha256'</span>).<span class="function">update</span>(id).<span class="function">digest</span>(<span class="string">'hex'</span>).<span class="function">substring</span>(<span class="number">0</span>, <span class="number">32</span>);
+  }
+  
+  <span class="keyword">async</span> <span class="function">validate</span>(key) {
+    <span class="keyword">const</span> hwid = <span class="keyword">this</span>.<span class="function">getHWID</span>();
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="function">post</span>(<span class="string">`${this.apiUrl}/api/validate`</span>, {
+        key: key,
+        hwid: hwid,
+        developerId: <span class="keyword">this</span>.developerId
+      });
+      <span class="keyword">return</span> response.data;
+    } catch (error) {
+      <span class="keyword">return</span> { valid: <span class="number">false</span>, message: error.message };
+    }
+  }
+}
+
+<span class="comment">// --- วิธีการสั่งรันตรวจสอบ ---</span>
+<span class="keyword">const</span> auth = <span class="keyword">new</span> <span class="function">HWIDAuth</span>(<span class="string">"https://apikeynexus.onrender.com"</span>, <span class="string">"YOUR_DEVELOPER_ID"</span>);
+
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">startApp</span>() {
+  <span class="keyword">const</span> result = <span class="keyword">await</span> auth.<span class="function">validate</span>(<span class="string">"KEY-XXXX-XXXX-XXXX-XXXX"</span>);
+  
+  <span class="keyword">if</span> (result.valid) {
+    console.<span class="function">log</span>(<span class="string">"✓ License valid! Application starting..."</span>);
+  } <span class="keyword">else</span> {
+    console.<span class="function">log</span>(<span class="string">`✗ License invalid: ${result.message}`</span>);
+    process.<span class="function">exit</span>(<span class="number">1</span>);
+  }
+}
+
+<span class="function">startApp</span>();</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop-blur-md bg-slate-900/50 rounded-3xl border border-slate-800/80 p-6 sm:p-8 shadow-xl">
+      <h2 class="text-lg font-bold text-white mb-6 tracking-wide flex items-center gap-2">
+        <span class="w-1.5 h-5 bg-indigo-500 rounded-full"></span> เอกสารอ้างอิง REST API Endpoint
+      </h2>
+
+      <div class="border border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40">
+        <div class="px-5 py-4 border-b border-slate-800/80 bg-slate-900/50 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold rounded-lg uppercase">POST</span>
+            <code class="text-sm font-mono text-slate-200 font-semibold">/api/validate</code>
+          </div>
+          <span class="text-xs text-slate-400">ตรวจสอบและล็อกข้อมูลฮาร์ดแวร์ไอดี</span>
+        </div>
+        
+        <div class="p-5 space-y-5">
+          <div>
+            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">⚡ Request Payload (JSON)</h4>
+            <pre class="bg-slate-950 rounded-xl p-4 border border-slate-800/60 font-mono text-xs text-blue-400"><code>{
+  <span class="string">"key"</span>: <span class="string">"KEY-XXXX-XXXX-XXXX-XXXX"</span>,
+  <span class="string">"hwid"</span>: <span class="string">"32-character-hwid-hash"</span>,
+  <span class="string">"developerId"</span>: <span class="string">"DEV-XXXXXXXX"</span>
+}</code></pre>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">🟢 Response (เมื่อคีย์ผ่านการยืนยัน)</h4>
+              <pre class="bg-slate-950 rounded-xl p-4 border border-slate-800/60 font-mono text-xs text-emerald-400"><code>{
+  <span class="string">"valid"</span>: <span class="number">true</span>,
+  <span class="string">"message"</span>: <span class="string">"Key verified successfully"</span>
+}</code></pre>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">🔴 Response (กรณีคีย์ไม่ผ่าน/ถูกระงับ)</h4>
+              <pre class="bg-slate-950 rounded-xl p-4 border border-slate-800/60 font-mono text-xs text-rose-400"><code>{
+  <span class="string">"valid"</span>: <span class="number">false</span>,
+  <span class="string">"message"</span>: <span class="string">"Key is banned or expired"</span>
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="text-sm font-bold text-white mb-3">คำอธิบายข้อความปฏิเสธสิทธิ์ (Error Responses)</h3>
+        <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-500 font-sans text-xs uppercase font-semibold">
+                  <th class="pb-3 w-1/3">ค่ากล่องข้อความที่ส่งกลับ</th>
+                  <th class="pb-3">สาเหตุ / ความหมาย</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <tr>
+                  <td class="py-3 font-medium text-rose-400">Invalid key</td>
+                  <td class="py-3 text-slate-400 font-sans text-xs sm:text-sm">ไม่มีชุดเลขคีย์นี้อยู่ในฐานข้อมูลระบบ</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-rose-400">Key is banned</td>
+                  <td class="py-3 text-slate-400 font-sans text-xs sm:text-sm">คีย์ถูกสั่งระงับสิทธิ์ชั่วคราวหรือถาวรโดยผู้พัฒนา</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-rose-400">Key expired</td>
+                  <td class="py-3 text-slate-400 font-sans text-xs sm:text-sm">ระยะเวลาโควตาการใช้งานของคีย์ตัวนี้หมดลงแล้ว</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-rose-400">HWID mismatch</td>
+                  <td class="py-3 text-slate-400 font-sans text-xs sm:text-sm">คีย์นี้ถูกล็อกกับอุปกรณ์เครื่องอื่นไปแล้ว ห้ามเปลี่ยนเครื่อง</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-rose-400">Developer ID mismatch</td>
+                  <td class="py-3 text-slate-400 font-sans text-xs sm:text-sm">Developer ID ผู้เรียกใช้ระบบกับตัวรับปลายทางไม่ตรงกัน</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-amber-500/10 to-amber-600/5 border border-amber-500/20 rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
+      <div class="absolute -right-10 -bottom-10 text-amber-500/5 pointer-events-none transform -rotate-12 group-hover:scale-110 transition-transform duration-500">
+        <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
+      </div>
+      <h2 class="text-base font-bold text-amber-400 mb-4 flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
         </svg>
-        หมายเหตุสำคัญ
+        ข้อกำหนดและข้อควรระวังสำคัญ (Security Protocols)
       </h2>
-      <ul class="space-y-2 text-sm text-amber-800">
-        <li>• รับ <strong>Developer ID</strong> ของคุณจากแดชบอร์ดหลังจากเข้าสู่ระบบด้วย Discord</li>
-        <li>• HWID ควรคงที่เมื่อเริ่มแอปพลิเคชันใหม่บนเครื่องเดียวกัน</li>
-        <li>• คีย์จะถูกล็อกกับเครื่องแรกที่ใช้งาน (HWID locking)</li>
-        <li>• หากผู้ใช้เปลี่ยนฮาร์ดแวร์ ให้ใช้ฟีเจอร์ "รีเซ็ต HWID" ในแดชบอร์ด</li>
-        <li>• เก็บ Developer ID ของคุณให้ปลอดภัย - จำเป็นสำหรับการเรียก API ทั้งหมด</li>
-        <li>• สำหรับการใช้งานจริง ให้ใช้ HTTPS แทน HTTP</li>
+      <ul class="space-y-3 text-xs sm:text-sm text-amber-200/80 leading-relaxed font-medium">
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 select-none">▪</span>
+          <span>ห้ามเปิดเผยค่า <strong class="text-white">Developer ID</strong> แก่บุคคลภายนอกโดยเด็ดขาด เนื่องจากเป็นคีย์หลักที่ระบุสิทธิ์ความเป็นเจ้าของระบบจัดการคีย์ทั้งหมด</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 select-none">▪</span>
+          <span>ฟังก์ชันการคำนวณค่า HWID ภายในโปรแกรม (Client-side) จะต้องคงที่และไม่ผันแปรตามตำแหน่งที่อยู่ไฟล์ เพื่อให้ระบบจำเครื่องเดิมได้อย่างสมบูรณ์</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 select-none">▪</span>
+          <span>เมื่อมีการใช้งานคีย์ครั้งแรก ระบบหลังบ้านจะบันทึกรหัสฮาร์ดแวร์ไอดีเครื่องนั้นทันที (First-use Hardware Lock)</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 select-none">▪</span>
+          <span>หากลูกค้าของท่านทำการเปลี่ยนอุปกรณ์คอมพิวเตอร์ หรืออัปเกรดชิ้นส่วนหลัก ท่านสามารถดำเนินการกดปุ่ม <strong class="text-white">"รีเซ็ต HWID"</strong> ผ่านทางหน้าแดชบอร์ดเพื่อให้คีย์กลับมาว่างพร้อมลงทะเบียนเครื่องใหม่อีกครั้ง</span>
+        </li>
       </ul>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-12">
-    <div class="max-w-7xl mx-auto px-6 py-6">
-      <p class="text-center text-sm text-slate-500">บริการตรวจสอบ HWID Key Authentication - เอกสาร API</p>
+  <footer class="border-t border-slate-800/60 bg-slate-950/40 py-6 mt-12 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-xs text-slate-500 tracking-wide">© 2026 HWID Key Authentication System. All Developer documentation rights reserved.</p>
     </div>
   </footer>
+
 </body>
 </html>
